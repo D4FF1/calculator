@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keren's Ultimate Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5b6bf0;
+            --secondary: #7e53eb;
+            --dark: #2c2c54;
+            --light: #f5f5f5;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --background: #f9f9f9;
+            --display-bg: #ffffff;
+            --button-bg: #ffffff;
+            --button-text: #333333;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #f5f5f5;
+            --light: #2d3436;
+            --background: #1e272e;
+            --display-bg: #2d3436;
+            --button-bg: #341f97;
+            --button-text: #f5f5f5;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(145deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            box-shadow: 0 15px 30px var(--shadow);
+            overflow: hidden;
+        }
+
+        .calculator-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .calculator-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .calculator-display {
+            padding: 30px 20px;
+            background-color: var(--display-bg);
+            text-align: right;
+            position: relative;
+        }
+
+        .calculation-history {
+            font-size: 1rem;
+            color: #888;
+            min-height: 24px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .display-input {
+            font-size: 2.5rem;
+            font-weight: 700;
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: right;
+            color: var(--dark);
+            outline: none;
+        }
+
+        .calculator-body {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .calc-button {
+            padding: 20px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            box-shadow: 0 4px 8px var(--shadow);
+            transition: transform 0.1s, box-shadow 0.1s;
+            font-weight: 600;
+        }
+
+        .calc-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .operator {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .equals {
+            background-color: var(--success);
+            color: white;
+            grid-column: span 2;
+        }
+
+        .clear, .delete {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .memory {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            color: white;
+            font-size: 0.9rem;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 480px) {
+            .calculator-container {
+                border-radius: 15px;
+            }
+            
+            .calc-button {
+                padding: 15px;
+                font-size: 1rem;
+            }
+            
+            .display-input {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="calculator-header">
+            <h1 class="calculator-title">Daffi Calculator</h1>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+        
+        <div class="calculator-display">
+            <div class="calculation-history" id="history"></div>
+            <input type="text" class="display-input" id="display" value="0" readonly>
+        </div>
+        
+        <div class="calculator-body">
+            <button class="calc-button clear" data-value="clear">C</button>
+            <button class="calc-button delete" data-value="delete">⌫</button>
+            <button class="calc-button memory" data-value="memory">MC</button>
+            <button class="calc-button operator" data-value="/">÷</button>
+            
+            <button class="calc-button" data-value="7">7</button>
+            <button class="calc-button" data-value="8">8</button>
+            <button class="calc-button" data-value="9">9</button>
+            <button class="calc-button operator" data-value="*">×</button>
+            
+            <button class="calc-button" data-value="4">4</button>
+            <button class="calc-button" data-value="5">5</button>
+            <button class="calc-button" data-value="6">6</button>
+            <button class="calc-button operator" data-value="-">−</button>
+            
+            <button class="calc-button" data-value="1">1</button>
+            <button class="calc-button" data-value="2">2</button>
+            <button class="calc-button" data-value="3">3</button>
+            <button class="calc-button operator" data-value="+">+</button>
+            
+            <button class="calc-button" data-value="0">0</button>
+            <button class="calc-button" data-value=".">.</button>
+            <button class="calc-button equals" data-value="=">=</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const display = document.getElementById('display');
+            const historyDisplay = document.getElementById('history');
+            const themeToggle = document.getElementById('themeToggle');
+            const buttons = document.querySelectorAll('.calc-button');
+            
+            let currentInput = '0';
+            let previousInput = '';
+            let operation = null;
+            let shouldResetScreen = false;
+            let memory = 0;
+            
+            // Toggle tema gelap/terang
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+            });
+            
+            // Update tampilan
+            function updateDisplay() {
+                display.value = currentInput.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+            
+            // Tambah angka
+            function appendNumber(number) {
+                if (currentInput === '0' || shouldResetScreen) {
+                    currentInput = number;
+                    shouldResetScreen = false;
+                } else {
+                    if (currentInput.length < 12) { // Batas digit
+                        currentInput += number;
+                    }
+                }
+            }
+            
+            // Tambah titik desimal
+            function addDecimal() {
+                if (shouldResetScreen) {
+                    currentInput = '0.';
+                    shouldResetScreen = false;
+                    return;
+                }
+                
+                if (!currentInput.includes('.')) {
+                    currentInput += '.';
+                }
+            }
+            
+            // Handle operator
+            function chooseOperation(op) {
+                if (currentInput === '0') return;
+                
+                if (previousInput !== '') {
+                    compute();
+                }
+                
+                operation = op;
+                previousInput = currentInput;
+                shouldResetScreen = true;
+                historyDisplay.textContent = `${previousInput} ${getOperationSymbol(operation)}`;
+            }
+            
+            // Lakukan perhitungan
+            function compute() {
+                let computation;
+                const prev = parseFloat(previousInput);
+                const current = parseFloat(currentInput);
+                
+                if (isNaN(prev) || isNaN(current)) return;
+                
+                switch (operation) {
+                    case '+':
+                        computation = prev + current;
+                        break;
+                    case '-':
+                        computation = prev - current;
+                        break;
+                    case '*':
+                        computation = prev * current;
+                        break;
+                    case '/':
+                        if (current === 0) {
+                            computation = 'Error';
+                        } else {
+                            computation = prev / current;
+                        }
+                        break;
+                    default:
+                        return;
+                }
+                
+                // Format hasil
+                if (computation.toString().length > 12) {
+                    currentInput = computation.toExponential(5).toString();
+                } else {
+                    currentInput = computation.toString();
+                }
+                
+                operation = null;
+                shouldResetScreen = true;
+                historyDisplay.textContent = '';
+            }
+            
+            // Reset kalkulator
+            function resetCalculator() {
+                currentInput = '0';
+                previousInput = '';
+                operation = null;
+                shouldResetScreen = false;
+                historyDisplay.textContent = '';
+            }
+            
+            // Hapus karakter terakhir
+            function deleteLast() {
+                if (currentInput.length === 1) {
+                    currentInput = '0';
+                } else {
+                    currentInput = currentInput.slice(0, -1);
+                }
+            }
+            
+            // Dapatkan simbol operator untuk tampilan
+            function getOperationSymbol(op) {
+                switch (op) {
+                    case '+': return '+';
+                    case '-': return '−';
+                    case '*': return '×';
+                    case '/': return '÷';
+                    default: return '';
+                }
+            }
+            
+            // Handle input dari tombol
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const value = button.getAttribute('data-value');
+                    
+                    // Animasi tombol
+                    button.classList.add('active');
+                    setTimeout(() => button.classList.remove('active'), 100);
+                    
+                    if (value >= '0' && value <= '9') {
+                        appendNumber(value);
+                    } else if (value === '.') {
+                        addDecimal();
+                    } else if (['+', '-', '*', '/'].includes(value)) {
+                        chooseOperation(value);
+                    } else if (value === '=') {
+                        compute();
+                    } else if (value === 'clear') {
+                        resetCalculator();
+                    } else if (value === 'delete') {
+                        deleteLast();
+                    } else if (value === 'memory') {
+                        memory = parseFloat(currentInput) || 0;
+                    }
+                    
+                    updateDisplay();
+                });
+            });
+            
+            // Support keyboard input
+            document.addEventListener('keydown', event => {
+                if (/[0-9]/.test(event.key)) {
+                    appendNumber(event.key);
+                } else if (event.key === '.') {
+                    addDecimal();
+                } else if (event.key === '+' || event.key === '-' || event.key === '*' || event.key === '/') {
+                    chooseOperation(event.key);
+                } else if (event.key === 'Enter' || event.key === '=') {
+                    compute();
+                } else if (event.key === 'Escape') {
+                    resetCalculator();
+                } else if (event.key === 'Backspace') {
+                    deleteLast();
+                }
+                
+                updateDisplay();
+            });
+            
+            // Inisialisasi tampilan
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>
